@@ -2,36 +2,91 @@
   <div>
     <appbar />
     <v-layout column justify-center align-center>
-      <div v-if="countrySelect" class=" head display-1 text--secondary text-uppercase">{{selectedCountry}}</div>
-      <div v-else class="text-uppercase text--center head">Covid 19 global data</div>
-      <div class="text-center text--accent-2" >{{covidData.lastUpdate}}</div>
+      <div
+        v-if="countrySelect"
+        class="head display-1 text--secondary text-uppercase"
+      >{{selectedCountry}}</div>
+      <div
+        v-else
+        class="text-uppercase text--center head"
+        data-aos="fade-up"
+        data-aos-duration="1500"
+        data-aos-delay="400"
+      >Covid 19 global data</div>
+      <div class="text-center text--accent-2" 
+         data-aos="fade-up"
+        data-aos-duration="1500"
+        data-aos-delay="300">{{covidData.lastUpdate}}</div>
     </v-layout>
-    <v-container >
-      <v-row class="mx-auto">
-        <v-col cols="12" md="4" lg="4">
-          <v-card max-width="300" max-height="400" class="Confirmed mx-1">
+    <v-container>
+      <v-row>
+        <v-col md="4" lg="4" sm="12">
+          <v-card
+            max-width="300"
+            max-height="400"
+            class="Confirmed mx-auto iCountUp"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+            data-aos-delay="50"
+          >
             <v-card-text>
-              <div class="text-center text-capitalize display-2">Active</div>
-              <div class="text-center text--accent-2" v-if="countrySelect">{{confirmed}}</div>
-              <div class="text-center text--accent-2" v-else>{{covidData.confirmed.value}}</div>
+              <div class="text-center text-capitalize display-2">Confirmed</div>
+              <div class="text-center text--accent-2" v-if="countrySelect">
+                <ICountUp
+                  :delay="delay"
+                  :endVal="confirmed"
+                  :options="options"
+                  class="text-center text--accent-2"
+                />
+              </div>
+              <div class="text-center text--accent-2" v-else>
+                <ICountUp
+                  :delay="delay"
+                  :endVal="covidData.confirmed.value"
+                  :options="options"
+                  class="text-center text--accent-2"
+                />
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="12" md="4" lg="4">
-          <v-card max-width="300" max-height="400" class="Deaths">
+          <v-card
+            max-width="300"
+            max-height="400"
+            class="Deaths mx-auto"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+            data-aos-delay="300"
+          >
             <v-card-text>
               <div class="text-center text-capitalize display-2">Deaths</div>
-              <div class="text-center text--accent-2" v-if="countrySelect">{{deaths}}</div>
-              <div class="text-center text--accent-2" v-else>{{covidData.deaths.value}}</div>
+              <div class="text-center text--accent-2" v-if="countrySelect">
+                <ICountUp :delay="delay" :endVal="deaths" :options="options" />
+              </div>
+              <div class="text-center text--accent-2" v-else>
+                <ICountUp :delay="delay" :endVal="covidData.deaths.value" :options="options" />
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="12" md="4" lg="4">
-          <v-card max-width="300" max-height="400" class="Recovered">
+          <v-card
+            max-width="300"
+            max-height="400"
+            class="Recovered mx-auto"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+            data-aos-delay="500"
+          >
             <v-card-text>
               <div class="text-center text-capitalize display-2">Recovered</div>
-              <div class="text-center text--accent-2" v-if="countrySelect">{{recovered}}</div>
-              <div class="text-center text--accent-2" v-else>{{covidData.recovered.value}}</div>
+              <div class="text-center text--accent-2" v-if="countrySelect">
+                <ICountUp :delay="delay" :endVal="recovered" :options="options" />
+              </div>
+              <div class="text-center text--accent-2" v-else>
+                <ICountUp :delay="delay" :endVal="covidData.recovered.value" :options="options" />
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -52,10 +107,11 @@
       </v-row>
       <v-row no-gutter>
         <v-col v-if="confirmed">
-          <chart :confirmed="confirmed" :recovered="recovered" :deaths="deaths"></chart>
+          <chart :confirmed="confirmed" :recovered="recovered" :deaths="deaths" ></chart>
         </v-col>
       </v-row>
     </v-container>
+
   </div>
 </template>
 
@@ -63,13 +119,25 @@
 import axios from "axios";
 import chart from "../components/chart";
 import appbar from "../components/appbar";
+import ICountUp from "vue-countup-v2";
 export default {
   components: {
     chart,
-    appbar
+    appbar,
+    ICountUp
   },
   data() {
     return {
+      delay: 1000,
+      height: 300,
+      options: {
+        useEasing: true,
+        useGrouping: true,
+        separator: ",",
+        decimal: ".",
+        prefix: "",
+        suffix: ""
+      },
       selectedValues: {},
       selectedCountry: "",
       countrySelect: false,
@@ -290,10 +358,10 @@ export default {
     this.getGlobalData();
   },
   methods: {
-    checkCountry(country) {
+   async  checkCountry(country) {
       this.countrySelect = true;
       this.confirmed = 0;
-      axios
+     await axios
         .get(`https://covid19.mathdro.id/api/countries/${country}`)
         .then(res => {
           this.confirmed = res.data.confirmed.value;
@@ -307,12 +375,17 @@ export default {
       this.countrySelect = false;
     },
 
-    getGlobalData() {
-      axios.get(`https://covid19.mathdro.id/api`).then(data => {
+    async getGlobalData() {
+      await axios.get(`https://covid19.mathdro.id/api`).then(data => {
         this.covidData = data.data;
       });
+    },
+
+    onReady: function(instance, CountUp) {
+      const that = this;
+      instance.update(that.endVal + 100);
     }
-  }
+  },
 };
 </script>
 
@@ -328,7 +401,7 @@ export default {
   border-bottom: 3px solid green !important;
 }
 
-.head{
+.head {
   font-size: 30px;
 }
 </style>
