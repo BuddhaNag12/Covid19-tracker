@@ -16,21 +16,21 @@
       <div class="text-center text--accent-2" 
          data-aos="fade-up"
         data-aos-duration="1500"
-        data-aos-delay="300">{{covidData.lastUpdate}}</div>
+        data-aos-delay="300">{{getDate}}</div>
     </v-layout>
     <v-container>
       <v-row>
-        <v-col md="4" lg="4" sm="12">
+        <v-col>
           <v-card
             max-width="300"
             max-height="400"
-            class="Confirmed mx-auto iCountUp"
+            class="Confirmed iCountUp"
             data-aos="fade-up"
             data-aos-duration="1000"
             data-aos-delay="50"
           >
             <v-card-text>
-              <div class="text-center text-capitalize display-2">Confirmed</div>
+              <div class="text-center display-2"><v-chip color="indigo" text-color="white"><v-icon>mdi-account-check</v-icon> Confirmed </v-chip></div>
               <div class="text-center text--accent-2" v-if="countrySelect">
                 <ICountUp
                   :delay="delay"
@@ -50,7 +50,37 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="12" md="4" lg="4">
+         <v-col >
+          <v-card
+            max-width="300"
+            max-height="400"
+            class="Active iCountUp"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+            data-aos-delay="50"
+          >
+            <v-card-text>
+              <div class="text-center display-2"><v-chip color="pink" text-color="white"><v-icon>mdi-account-convert</v-icon> Active</v-chip></div>
+              <div class="text-center " v-if="countrySelect">
+                <ICountUp
+                  :delay="delay"
+                  :endVal="active"
+                  :options="options"
+                  class="text-center "
+                />
+              </div>
+              <div class="text-center " v-else>
+                <ICountUp
+                  :delay="delay"
+                  :endVal="covidData.confirmed.value-covidData.recovered.value-covidData.deaths.value"
+                  :options="options"
+                  class="text-center "
+                />
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col >
           <v-card
             max-width="300"
             max-height="400"
@@ -60,17 +90,17 @@
             data-aos-delay="300"
           >
             <v-card-text>
-              <div class="text-center text-capitalize display-2">Deaths</div>
-              <div class="text-center text--accent-2" v-if="countrySelect">
+              <div class="text-center display-2"><v-chip color="red" text-color="white"><v-icon>mdi-account-off</v-icon>Deaths</v-chip></div>
+              <div class="text-center " v-if="countrySelect">
                 <ICountUp :delay="delay" :endVal="deaths" :options="options" />
               </div>
-              <div class="text-center text--accent-2" v-else>
+              <div class="text-center " v-else>
                 <ICountUp :delay="delay" :endVal="covidData.deaths.value" :options="options" />
               </div>
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="12" md="4" lg="4">
+        <v-col >
           <v-card
             max-width="300"
             max-height="400"
@@ -80,11 +110,11 @@
             data-aos-delay="500"
           >
             <v-card-text>
-              <div class="text-center text-capitalize display-2">Recovered</div>
-              <div class="text-center text--accent-2" v-if="countrySelect">
+              <div class="text-center display-2"><v-chip color="green" text-color="white"><v-icon>mdi-account-multiple-plus</v-icon> Recovered</v-chip></div>
+              <div class="text-center " v-if="countrySelect">
                 <ICountUp :delay="delay" :endVal="recovered" :options="options" />
               </div>
-              <div class="text-center text--accent-2" v-else>
+              <div class="text-center " v-else>
                 <ICountUp :delay="delay" :endVal="covidData.recovered.value" :options="options" />
               </div>
             </v-card-text>
@@ -107,7 +137,7 @@
       </v-row>
       <v-row no-gutter>
         <v-col v-if="confirmed">
-          <chart :confirmed="confirmed" :recovered="recovered" :deaths="deaths" ></chart>
+          <chart :confirmed="confirmed" :recovered="recovered" :deaths="deaths" :active="active"></chart>
         </v-col>
       </v-row>
     </v-container>
@@ -120,6 +150,7 @@ import axios from "axios";
 import chart from "../components/chart";
 import appbar from "../components/appbar";
 import ICountUp from "vue-countup-v2";
+import moment from 'moment'
 export default {
   components: {
     chart,
@@ -348,11 +379,18 @@ export default {
         "Zambia",
         "Zimbabwe"
       ],
+      active:0,
       confirmed: 0,
       recovered: 0,
       deaths: 0,
       covidData: {}
     };
+  },
+  computed:{
+    getDate(){
+       const date=moment(this.covidData.lastUpdate).format("dddd, MMMM Do YYYY, h:mm a");
+       return date;
+    }
   },
   mounted() {
     this.getGlobalData();
@@ -367,6 +405,7 @@ export default {
           this.confirmed = res.data.confirmed.value;
           this.recovered = res.data.recovered.value;
           this.deaths = res.data.deaths.value;
+          this.active=res.data.confirmed.value-res.data.recovered.value-res.data.deaths.value;
         });
     },
 
@@ -391,6 +430,9 @@ export default {
 
 
 <style scoped>
+.Active{
+  border-bottom: 3px solid pink !important;
+}
 .Confirmed {
   border-bottom: 3px solid violet !important;
 }
