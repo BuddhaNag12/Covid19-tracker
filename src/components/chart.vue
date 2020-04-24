@@ -5,7 +5,7 @@ import { Bar } from 'vue-chartjs'
 export default {
   extends: Bar,
 
-  props:['confirmed','recovered','deaths','active'],
+  props:['confirmed','recovered','deaths','active','country'],
   data(){
     return{
       options: {
@@ -16,7 +16,7 @@ export default {
         labels: ["Confirmed","Active", "Recovered", "Deaths"],
         datasets: [
           {
-            label: "People",
+            label:this.country,
             backgroundColor: [
               "rgba(0, 0, 255, 0.5)",
               "rgba(0, 255, 244, 0.5)",

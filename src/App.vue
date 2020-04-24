@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-content>
+    <v-content >
       <home />
     </v-content>
   </v-app>
