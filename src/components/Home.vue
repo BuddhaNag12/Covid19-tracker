@@ -17,9 +17,9 @@
         data-aos-delay="300"
       >Updated : {{getDate}}</div>
     </v-layout>
-    <v-container>
-      <v-row>
-        <v-col>
+    <v-container >
+      <v-row v-if="covidData.confirmed">
+      <v-col > 
           <v-card
             max-width="300"
             max-height="400"
@@ -131,11 +131,16 @@
           </v-card>
         </v-col>
       </v-row>
+     <v-row v-else>
+       <v-col>
+      <h1 class="text-center">loading</h1>
+       </v-col>
+      </v-row>
       <div>Select a country to display</div>
       <v-row align="center">
         <v-col>
           <v-select
-            :items="country"
+            :items="countries"
             v-model="selectedCountry"
             label="Country"
             @change="checkCountry(selectedCountry)"
@@ -153,7 +158,7 @@
     <section id="Chart">
       <v-container>
        <v-row no-gutter>
-        <v-col v-if="confirmed">
+        <v-col v-if="confirmed || active">
           <chart
             :confirmed="confirmed"
             :recovered="recovered"
@@ -175,6 +180,7 @@ import chart from "../components/chart";
 import appbar from "../components/appbar";
 import ICountUp from "vue-countup-v2";
 import moment from "moment";
+const api="https://covid19.mathdro.id/api/";
 export default {
   components: {
     chart,
@@ -196,7 +202,7 @@ export default {
       selectedValues: {},
       selectedCountry: "",
       countrySelect: false,
-      country: [
+      countries: [
         "Afghanistan",
         "Albania",
         "Algeria",
@@ -417,17 +423,17 @@ export default {
         "dddd, MMMM Do YYYY, h:mm a"
       );
       return date;
-    }
+    },
   },
   mounted() {
-    this.getGlobalData();
+     this.getGlobalData();
   },
   methods: {
     async checkCountry(country) {
       this.countrySelect = true;
       this.confirmed = 0;
       await axios
-        .get(`https://covid19.mathdro.id/api/countries/${country}`)
+        .get(`${api}countries/${country}`)
         .then(res => {
           this.confirmed = res.data.confirmed.value;
           this.recovered = res.data.recovered.value;
@@ -436,7 +442,8 @@ export default {
             res.data.confirmed.value -
             res.data.recovered.value -
             res.data.deaths.value;
-        });
+        }
+      ).catch(err=>console.log(err));
     },
 
     reset() {
@@ -446,7 +453,7 @@ export default {
     },
 
     async getGlobalData() {
-      await axios.get(`https://covid19.mathdro.id/api`).then(res => {
+     const data= await axios.get(`${api}`).then(res => {
         this.covidData = res.data
       });
     },
