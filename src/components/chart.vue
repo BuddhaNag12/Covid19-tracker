@@ -18,10 +18,10 @@ export default {
           {
             label:this.country,
             backgroundColor: [
-              "rgba(0, 0, 255, 0.5)",
-              "rgba(0, 255, 244, 0.5)",
-              "rgba(0, 255, 0, 0.5)",
-              "rgba(255, 0, 0, 0.5)",
+              "rgba(0, 0, 255, 0.8)",
+              "rgba(209, 107, 165, 0.8)",
+              "rgba(0, 255, 0, 0.6)",
+              "rgba(255, 0, 0, 0.8)",
             ],
             data: [this.confirmed,this.active,this.recovered,this.deaths]
           }

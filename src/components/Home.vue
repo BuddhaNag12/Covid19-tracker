@@ -6,28 +6,21 @@
         v-if="countrySelect"
         class="head display-1 text--secondary text-uppercase"
       >{{selectedCountry}}</div>
-      <div
-        v-else
-        class="text-uppercase text--center head"
-      >Covid 19 global data</div>
+      <div v-else class="text-uppercase text--center head">Covid 19 global data</div>
       <div
         class="text-center text--accent-2"
         data-aos="fade-up"
         data-aos-duration="1500"
         data-aos-delay="300"
-      >Updated : {{getDate}}</div>
+      >
+        <v-icon color="red" size="15px" class="update">mdi-checkbox-blank-circle</v-icon>
+        Updated : {{getDate}}
+      </div>
     </v-layout>
-    <v-container >
+    <v-container>
       <v-row v-if="covidData.confirmed">
-      <v-col > 
-          <v-card
-            max-width="300"
-            max-height="400"
-            class="Confirmed iCountUp"
-            data-aos="fade-up"
-            data-aos-duration="1000"
-            data-aos-delay="50"
-          >
+        <v-col>
+          <v-card max-width="300" max-height="400" class="Confirmed iCountUp">
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="indigo" text-color="white">
@@ -42,6 +35,7 @@
                   class="text-center text--accent-2"
                 />
               </div>
+
               <div class="text-center text--accent-2" v-else>
                 <ICountUp
                   :delay="delay"
@@ -54,14 +48,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card
-            max-width="300"
-            max-height="400"
-            class="Active iCountUp"
-            data-aos="fade-up"
-            data-aos-duration="1000"
-            data-aos-delay="50"
-          >
+          <v-card max-width="300" max-height="400" class="Active iCountUp">
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="pink" text-color="white">
@@ -83,14 +70,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card
-            max-width="300"
-            max-height="400"
-            class="Deaths mx-auto"
-            data-aos="fade-up"
-            data-aos-duration="1000"
-            data-aos-delay="300"
-          >
+          <v-card max-width="300" max-height="400" class="Deaths mx-auto">
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="red" text-color="white">
@@ -107,14 +87,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card
-            max-width="300"
-            max-height="400"
-            class="Recovered mx-auto"
-            data-aos="fade-up"
-            data-aos-duration="1000"
-            data-aos-delay="500"
-          >
+          <v-card max-width="300" max-height="400" class="Recovered mx-auto">
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="green" text-color="white">
@@ -131,10 +104,11 @@
           </v-card>
         </v-col>
       </v-row>
-     <v-row v-else>
-       <v-col>
-      <h1 class="text-center">loading</h1>
-       </v-col>
+      <v-row v-else>
+        <v-col v-for="n in 4" :key="n" 
+      >
+          <v-skeleton-loader class="mx-auto" max-width="300" max-height="400" type="image"></v-skeleton-loader>
+        </v-col>
       </v-row>
       <div>Select a country to display</div>
       <v-row align="center">
@@ -149,43 +123,44 @@
             <v-btn @click="reset" color="primary">reset</v-btn>
           </div>
           <div v-if="countrySelect" class="text-center">
-              <h1 class="caption ">Scroll to see chart</h1>
-              <v-icon class="scrollDown">mdi-chevron-double-down</v-icon>
+            <h1 class="caption">Scroll to see chart</h1>
+            <v-icon class="scrollDown">mdi-chevron-double-down</v-icon>
           </div>
         </v-col>
       </v-row>
     </v-container>
     <section id="Chart">
       <v-container>
-       <v-row no-gutter>
-        <v-col v-if="confirmed || active">
-          <chart
-            :confirmed="confirmed"
-            :recovered="recovered"
-            :deaths="deaths"
-            :active="active"
-            :country="selectedCountry"
-          ></chart>
-        </v-col>
-      </v-row>
+        <v-row no-gutter>
+          <v-col v-if="confirmed">
+            <chart
+              :confirmed="confirmed"
+              :recovered="recovered"
+              :deaths="deaths"
+              :active="active"
+              :country="selectedCountry"
+            ></chart>
+          </v-col>
+        </v-row>
       </v-container>
     </section>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from "vue";
 import axios from "axios";
 import chart from "../components/chart";
 import appbar from "../components/appbar";
 import ICountUp from "vue-countup-v2";
 import moment from "moment";
-const api="https://covid19.mathdro.id/api/";
+const api = "https://covid19.mathdro.id/api/";
+
 export default {
   components: {
     chart,
     appbar,
-    ICountUp
+    ICountUp,
   },
   data() {
     return {
@@ -414,7 +389,7 @@ export default {
       confirmed: 0,
       recovered: 0,
       deaths: 0,
-      covidData: {},
+      covidData: {}
     };
   },
   computed: {
@@ -423,16 +398,16 @@ export default {
         "dddd, MMMM Do YYYY, h:mm a"
       );
       return date;
-    },
+    }
   },
   mounted() {
-     this.getGlobalData();
+    this.getGlobalData();
   },
   methods: {
-    async checkCountry(country) {
+   checkCountry(country) {
       this.countrySelect = true;
       this.confirmed = 0;
-      await axios
+    axios
         .get(`${api}countries/${country}`)
         .then(res => {
           this.confirmed = res.data.confirmed.value;
@@ -442,25 +417,25 @@ export default {
             res.data.confirmed.value -
             res.data.recovered.value -
             res.data.deaths.value;
-        }
-      ).catch(err=>console.log(err));
+        })
+        .catch(err => console.log(err));
     },
 
     reset() {
-      this.confirmed = 0
-      this.countrySelect = false
-      this.selectedCountry=""
+      this.confirmed = 0;
+      this.countrySelect = false;
+      this.selectedCountry = "";
     },
 
-    async getGlobalData() {
-     const data= await axios.get(`${api}`).then(res => {
-        this.covidData = res.data
+ getGlobalData() {
+      axios.get(`${api}`).then(res => {
+        this.covidData = res.data;
       });
     },
 
     onReady: function(instance, CountUp) {
       const that = this;
-      instance.update(that.endVal + 100)
+      instance.update(that.endVal + 100);
     }
   }
 };
@@ -484,14 +459,25 @@ export default {
 .head {
   font-size: 30px;
 }
-.scrollDown{
-  animation: move 0.6s ease-in-out alternate infinite;
+
+.update {
+  animation: blink 1s infinite alternate;
+}
+
+.scrollDown {
+  transition: all ease-in-out;
+  animation: move 0.6s alternate infinite;
 }
 
 @keyframes move {
-  to{
+  to {
     transform: translateY(20px);
   }
 }
 
+@keyframes blink {
+  to {
+    transform: scale(1.4);
+  }
+}
 </style>
