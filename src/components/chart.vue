@@ -9,9 +9,18 @@ export default {
   data(){
     return{
       options: {
-      type: Object,
-      default: null
-    },
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
+            }
+          ]
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      },
       chartdata: {
         labels: ["Confirmed","Active", "Recovered", "Deaths"],
         datasets: [

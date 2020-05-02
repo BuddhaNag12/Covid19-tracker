@@ -9,7 +9,7 @@
       <div v-else class="text-uppercase text--center head">Covid 19 global data</div>
       <div
         class="text-center text--accent-2"
-        data-aos="fade-up"
+        data-aos="fadeIn"
         data-aos-duration="1500"
         data-aos-delay="300"
       >
@@ -20,7 +20,7 @@
     <v-container>
       <v-row v-if="covidData.confirmed">
         <v-col>
-          <v-card max-width="300" max-height="400" class="Confirmed iCountUp">
+          <v-card max-width="300" max-height="400" class="Confirmed iCountUp" outlined shaped>
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="indigo" text-color="white">
@@ -48,7 +48,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card max-width="300" max-height="400" class="Active iCountUp">
+          <v-card max-width="300" max-height="400" class="Active iCountUp" shaped outlined>
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="pink" text-color="white">
@@ -70,7 +70,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card max-width="300" max-height="400" class="Deaths mx-auto">
+          <v-card max-width="300" max-height="400" class="Deaths mx-auto"  shaped outlined>
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="red" text-color="white">
@@ -87,7 +87,7 @@
           </v-card>
         </v-col>
         <v-col>
-          <v-card max-width="300" max-height="400" class="Recovered mx-auto">
+          <v-card max-width="300" max-height="400" class="Recovered mx-auto" shaped outlined>
             <v-card-text>
               <div class="text-center display-2">
                 <v-chip color="green" text-color="white">
@@ -133,6 +133,7 @@
       <v-container class="chart" >
         <v-row no-gutter >
           <v-col v-if="confirmed">
+            <div class="chart">
             <chart
               :confirmed="confirmed"
               :recovered="recovered"
@@ -140,13 +141,15 @@
               :active="active"
               :country="selectedCountry"
             ></chart>
+            </div>
           </v-col>
           <v-col v-else-if="error">
-            <h2>{{error}}</h2>
+            <v-sheet class="error white--text">{{error}}</v-sheet>
           </v-col>
            <v-col v-else-if="daily" >
-             <v-card class="mx-auto" >
-            <lineChart :dates="this.lastDate" :dailyConfirmed="dailyConfirmed" :dailyDeaths="dailyDeaths" />
+             <v-card class="mx-auto" tile >
+            <lineChart :dates="this.lastDate" :dailyConfirmed="dailyConfirmed" :dailyDeaths="dailyDeaths" 
+            />
              </v-card>
           </v-col>
         </v-row>
@@ -163,6 +166,8 @@ import lineChart from "../components/linechart"
 import appbar from "../components/appbar";
 import ICountUp from "vue-countup-v2";
 import moment from "moment";
+
+// Apis for getting live data
 const api = "https://covid19.mathdro.id/api/";
 const dailyApi = "https://covid19.mathdro.id/api/daily"
 
@@ -182,220 +187,11 @@ export default {
         useGrouping: true,
         separator: ",",
         decimal: ".",
-        prefix: "",
-        suffix: ""
       },
       selectedValues: {},
       selectedCountry: "",
       countrySelect: false,
-      countries: [
-        "Afghanistan",
-        "Albania",
-        "Algeria",
-        "Andorra",
-        "Angola",
-        "Anguilla",
-        "Antigua &amp; Barbuda",
-        "Argentina",
-        "Armenia",
-        "Aruba",
-        "Australia",
-        "Austria",
-        "Azerbaijan",
-        "USA",
-        "Bahamas",
-        "Bahrain",
-        "Bangladesh",
-        "Barbados",
-        "Belarus",
-        "Belgium",
-        "Belize",
-        "Benin",
-        "Bermuda",
-        "Bhutan",
-        "Bolivia",
-        "Bosnia &amp; Herzegovina",
-        "Botswana",
-        "Brazil",
-        "British Virgin Islands",
-        "Brunei",
-        "Bulgaria",
-        "Burkina Faso",
-        "Burundi",
-        "Cambodia",
-        "Cameroon",
-        "Cape Verde",
-        "Cayman Islands",
-        "Chad",
-        "Chile",
-        "China",
-        "Colombia",
-        "Congo",
-        "Cook Islands",
-        "Costa Rica",
-        "Cote D Ivoire",
-        "Croatia",
-        "Cruise Ship",
-        "Cuba",
-        "Cyprus",
-        "Czech Republic",
-        "Denmark",
-        "Djibouti",
-        "Dominica",
-        "Dominican Republic",
-        "Ecuador",
-        "Egypt",
-        "El Salvador",
-        "Equatorial Guinea",
-        "Estonia",
-        "Ethiopia",
-        "Falkland Islands",
-        "Faroe Islands",
-        "Fiji",
-        "Finland",
-        "France",
-        "French Polynesia",
-        "French West Indies",
-        "Gabon",
-        "Gambia",
-        "Georgia",
-        "Germany",
-        "Ghana",
-        "Gibraltar",
-        "Greece",
-        "Greenland",
-        "Grenada",
-        "Guam",
-        "Guatemala",
-        "Guernsey",
-        "Guinea",
-        "Guinea Bissau",
-        "Guyana",
-        "Haiti",
-        "Honduras",
-        "Hong Kong",
-        "Hungary",
-        "Iceland",
-        "India",
-        "Indonesia",
-        "Iran",
-        "Iraq",
-        "Ireland",
-        "Isle of Man",
-        "Israel",
-        "Italy",
-        "Jamaica",
-        "Japan",
-        "Jersey",
-        "Jordan",
-        "Kazakhstan",
-        "Kenya",
-        "Kuwait",
-        "Kyrgyz Republic",
-        "Laos",
-        "Latvia",
-        "Lebanon",
-        "Lesotho",
-        "Liberia",
-        "Libya",
-        "Liechtenstein",
-        "Lithuania",
-        "Luxembourg",
-        "Macau",
-        "Macedonia",
-        "Madagascar",
-        "Malawi",
-        "Malaysia",
-        "Maldives",
-        "Mali",
-        "Malta",
-        "Mauritania",
-        "Mauritius",
-        "Mexico",
-        "Moldova",
-        "Monaco",
-        "Mongolia",
-        "Montenegro",
-        "Montserrat",
-        "Morocco",
-        "Mozambique",
-        "Namibia",
-        "Nepal",
-        "Netherlands",
-        "Netherlands Antilles",
-        "New Caledonia",
-        "New Zealand",
-        "Nicaragua",
-        "Niger",
-        "Nigeria",
-        "Norway",
-        "Oman",
-        "Pakistan",
-        "Palestine",
-        "Panama",
-        "Papua New Guinea",
-        "Paraguay",
-        "Peru",
-        "Philippines",
-        "Poland",
-        "Portugal",
-        "Puerto Rico",
-        "Qatar",
-        "Reunion",
-        "Romania",
-        "Russia",
-        "Rwanda",
-        "Saint Pierre &amp; Miquelon",
-        "Samoa",
-        "San Marino",
-        "Satellite",
-        "Saudi Arabia",
-        "Senegal",
-        "Serbia",
-        "Seychelles",
-        "Sierra Leone",
-        "Singapore",
-        "Slovakia",
-        "Slovenia",
-        "South Africa",
-        "South Korea",
-        "Spain",
-        "Sri Lanka",
-        "St Kitts &amp; Nevis",
-        "St Lucia",
-        "St Vincent",
-        "St. Lucia",
-        "Sudan",
-        "Suriname",
-        "Swaziland",
-        "Sweden",
-        "Switzerland",
-        "Syria",
-        "Taiwan",
-        "Tajikistan",
-        "Tanzania",
-        "Thailand",
-        "Timor L'Este",
-        "Togo",
-        "Tonga",
-        "Trinidad &amp; Tobago",
-        "Tunisia",
-        "Turkey",
-        "Turkmenistan",
-        "Turks &amp; Caicos",
-        "Uganda",
-        "Ukraine",
-        "United Arab Emirates",
-        "United Kingdom",
-        "Uruguay",
-        "Uzbekistan",
-        "Venezuela",
-        "Vietnam",
-        "Virgin Islands (US)",
-        "Yemen",
-        "Zambia",
-        "Zimbabwe"
-      ],
+      countries: [],
       active: 0,
       confirmed: 0,
       recovered: 0,
@@ -404,36 +200,48 @@ export default {
       lastDate:[],
       dailyConfirmed:[],
       dailyDeaths:[],
+      dailyRecovered:[],
       daily:false,
-      error:''
+      error:'',
     };
   },
+
+  // Getting Updated Dates in a readable format using moment
   computed: {
     getDate() {
-      const date = moment(this.covidData.lastUpdate).format(
+     return moment(this.covidData.lastUpdate).format(
         "dddd, MMMM Do YYYY, h:mm a"
       );
-      return date;
-    }
+    },
   },
+
+  // Calling the methods as soon as compont mounts 
   mounted() {
     this.getGlobalData();
- 
+    this.getDailyData()
   },
+  //getting name of each countries
   created(){
-       this.getDailyData()
+    axios.get(`${api}countries`).then(res=>{
+      const allCountries =res.data.countries;
+      allCountries.forEach(country=>this.countries.push(country.name)) 
+    })
   },
+
+  // all methods i.e functions 
   methods: {
+
+  // Getting data as soon as user select a country
    checkCountry(country) {
       this.countrySelect = true;
       this.confirmed = 0;
-
-    axios
+       axios
         .get(`${api}countries/${country}`)
         .then(res => {
           this.confirmed = res.data.confirmed.value;
           this.recovered = res.data.recovered.value;
           this.deaths = res.data.deaths.value;
+          // calculating the active cases values
           this.active =
             res.data.confirmed.value -
             res.data.recovered.value -
@@ -442,6 +250,7 @@ export default {
         .catch(err => this.error=`Data not found ${err}`);
     },
 
+  // calling reset for showing global data
     reset() {
       this.confirmed = 0;
       this.countrySelect = false;
@@ -449,11 +258,14 @@ export default {
       this.error=''
     },
 
+  // Getting global data
    getGlobalData() {
       axios.get(`${api}`).then(res => {
         this.covidData = res.data;
       });
     },
+
+    //Getting daily updates for line chart
      getDailyData() {
       axios.get(`${dailyApi}`).then(res => {
         const data=res.data;
@@ -475,12 +287,12 @@ export default {
 </script>
 
 
-<style scoped>
+<style scope>
 .Active {
-  border-bottom: 3px solid pink !important;
+  border-bottom: 3px solid rgb(247, 156, 171) !important;
 }
 .Confirmed {
-  border-bottom: 3px solid violet !important;
+  border-bottom: 3px solid rgb(51, 104, 216) !important;
 }
 .Deaths {
   border-bottom: 3px solid red !important;
@@ -514,7 +326,5 @@ export default {
   }
 }
 
-.line{
-  height: 400px;
-}
+
 </style>

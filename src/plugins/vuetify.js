@@ -11,11 +11,12 @@ export default new Vuetify({
           light: {
             primary: colors.lightBlue,
             secondary: colors.grey.darken1,
-            accent: colors.shades.black,
+            accent: colors.blueGrey,
             error: colors.red.accent3,
           },
           dark: {
             primary: colors.shades.black,
+            accent:colors.shades.black
           },
         },
       },
