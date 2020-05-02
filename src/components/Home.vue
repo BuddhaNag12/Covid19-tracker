@@ -130,8 +130,8 @@
       </v-row>
     </v-container>
     <section id="Chart">
-      <v-container>
-        <v-row no-gutter>
+      <v-container class="chart" >
+        <v-row no-gutter >
           <v-col v-if="confirmed">
             <chart
               :confirmed="confirmed"
@@ -140,6 +140,14 @@
               :active="active"
               :country="selectedCountry"
             ></chart>
+          </v-col>
+          <v-col v-else-if="error">
+            <h2>{{error}}</h2>
+          </v-col>
+           <v-col v-else-if="daily" >
+             <v-card class="mx-auto" >
+            <lineChart :dates="this.lastDate" :dailyConfirmed="dailyConfirmed" :dailyDeaths="dailyDeaths" />
+             </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -151,16 +159,19 @@
 import Vue from "vue";
 import axios from "axios";
 import chart from "../components/chart";
+import lineChart from "../components/linechart"
 import appbar from "../components/appbar";
 import ICountUp from "vue-countup-v2";
 import moment from "moment";
 const api = "https://covid19.mathdro.id/api/";
+const dailyApi = "https://covid19.mathdro.id/api/daily"
 
 export default {
   components: {
     chart,
     appbar,
     ICountUp,
+    lineChart
   },
   data() {
     return {
@@ -389,7 +400,12 @@ export default {
       confirmed: 0,
       recovered: 0,
       deaths: 0,
-      covidData: {}
+      covidData: {},
+      lastDate:[],
+      dailyConfirmed:[],
+      dailyDeaths:[],
+      daily:false,
+      error:''
     };
   },
   computed: {
@@ -402,11 +418,16 @@ export default {
   },
   mounted() {
     this.getGlobalData();
+ 
+  },
+  created(){
+       this.getDailyData()
   },
   methods: {
    checkCountry(country) {
       this.countrySelect = true;
       this.confirmed = 0;
+
     axios
         .get(`${api}countries/${country}`)
         .then(res => {
@@ -418,18 +439,30 @@ export default {
             res.data.recovered.value -
             res.data.deaths.value;
         })
-        .catch(err => console.log(err));
+        .catch(err => this.error=`Data not found ${err}`);
     },
 
     reset() {
       this.confirmed = 0;
       this.countrySelect = false;
       this.selectedCountry = "";
+      this.error=''
     },
 
- getGlobalData() {
+   getGlobalData() {
       axios.get(`${api}`).then(res => {
         this.covidData = res.data;
+      });
+    },
+     getDailyData() {
+      axios.get(`${dailyApi}`).then(res => {
+        const data=res.data;
+        this.daily=true
+        data.forEach(data=>{
+          this.lastDate.push(data.reportDate)
+          this.dailyConfirmed.push(data.confirmed.total)
+          this.dailyDeaths.push(data.deaths.total)
+        })
       });
     },
 
@@ -479,5 +512,9 @@ export default {
   to {
     transform: scale(1.4);
   }
+}
+
+.line{
+  height: 400px;
 }
 </style>
